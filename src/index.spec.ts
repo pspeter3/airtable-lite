@@ -352,7 +352,7 @@ describe("Airtable", () => {
                 }));
                 return JSON.stringify({ records });
             });
-            const { records } = await new Airtable("", "", "").bulkCreate([
+            const records = await new Airtable("", "", "").bulkCreate([
                 {},
                 {},
             ]);
@@ -377,7 +377,7 @@ describe("Airtable", () => {
                 }));
                 return JSON.stringify({ records });
             });
-            const { records } = await new Airtable("", "", "").bulkCreate(
+            const records = await new Airtable("", "", "").bulkCreate(
                 [{}, {}],
                 true
             );
@@ -410,7 +410,7 @@ describe("Airtable", () => {
                 { id: "0", fields: {} },
                 { id: "1", fields: {} },
             ];
-            const { records } = await new Airtable("", "", "").bulkUpdate(data);
+            const records = await new Airtable("", "", "").bulkUpdate(data);
             expect(records).toMatchObject(data);
         });
 
@@ -437,7 +437,7 @@ describe("Airtable", () => {
                 { id: "0", fields: {} },
                 { id: "1", fields: {} },
             ];
-            const { records } = await new Airtable("", "", "").bulkUpdate(
+            const records = await new Airtable("", "", "").bulkUpdate(
                 data,
                 false,
                 true
@@ -466,7 +466,7 @@ describe("Airtable", () => {
                 { id: "0", fields: {} },
                 { id: "1", fields: {} },
             ];
-            const { records } = await new Airtable("", "", "").bulkUpdate(
+            const records = await new Airtable("", "", "").bulkUpdate(
                 data,
                 true
             );
@@ -485,7 +485,7 @@ describe("Airtable", () => {
                 });
             });
             const ids = ["1", "2", "3"];
-            const { records } = await new Airtable("", "", "").bulkDelete(ids);
+            const records = await new Airtable("", "", "").bulkDelete(ids);
             expect(records).toEqual(ids.map((id) => ({ id, deleted: true })));
         });
     });
