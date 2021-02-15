@@ -3,11 +3,8 @@
   "version": "0.3.0",
   "description": "Light weight type safe Airtable API client",
   "type": "module",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "./lib/*"
-  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "docs": "typedoc --out docs src/index.ts",
