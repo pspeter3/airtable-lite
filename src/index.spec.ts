@@ -375,4 +375,20 @@ describe("Airtable", () => {
             expect(records).toMatchObject(data);
         });
     });
+
+    describe("bulkDelete", () => {
+        it("should delete a list of records", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("DELETE");
+                const url = new URL(req.url);
+                const ids = url.searchParams.getAll("records[]");
+                return JSON.stringify({
+                    records: ids.map((id) => ({ id, deleted: true })),
+                });
+            });
+            const ids = ["1", "2", "3"];
+            const { records } = await new Airtable("", "", "").bulkDelete(ids);
+            expect(records).toEqual(ids.map((id) => ({ id, deleted: true })));
+        });
+    });
 });

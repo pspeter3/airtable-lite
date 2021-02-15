@@ -133,6 +133,25 @@ export class Airtable<T> {
         );
     }
 
+    /**
+     * Bulk deletes a list of records.
+     * @param ids The record IDs to delete.
+     */
+    async bulkDelete(
+        ids: string[]
+    ): Promise<AirtableRecordsResponse<AirtableDeletion>> {
+        const url = this._createURL();
+        for (const id of ids) {
+            url.searchParams.append("records[]", id);
+        }
+        return this._dispatch(
+            new Request(url.toString(), {
+                method: "DELETE",
+                headers: this._createHeaders(false),
+            })
+        );
+    }
+
     private async _dispatch<R>(req: Request): Promise<R> {
         const res = await fetch(req);
         const data = await res.json();
