@@ -7,6 +7,7 @@ import {
     AirtableSelectOptions,
     AIRTABLE_API_URL,
     AIRTABLE_API_VERSION,
+    createAirtableClient,
 } from "./index";
 
 describe("Constants", () => {
@@ -487,5 +488,17 @@ describe("Airtable", () => {
             const { records } = await new Airtable("", "", "").bulkDelete(ids);
             expect(records).toEqual(ids.map((id) => ({ id, deleted: true })));
         });
+    });
+});
+
+describe("createAirtableClient", () => {
+    it("should create a factory", async () => {
+        const _apiKey = "key";
+        const _base = "base";
+        const _table = "table";
+        const createBase = createAirtableClient(_apiKey);
+        const createTable = createBase(_base);
+        const table = createTable(_table);
+        expect(table).toMatchObject({ _apiKey, _base, _table });
     });
 });
