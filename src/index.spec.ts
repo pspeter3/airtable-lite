@@ -165,8 +165,7 @@ describe("Airtable", () => {
             const id = "0";
             const fields = {};
             fetchMock.mockResponseOnce(async (req) => {
-                const parts = req.url.split("/");
-                const id = parts[parts.length - 1];
+                expect(req.url).toMatch(new RegExp(`/${id}$`));
                 expect(req.method).toBe("PATCH");
                 const body = await req.json();
                 expect(body.fields).toEqual(fields);
@@ -184,8 +183,7 @@ describe("Airtable", () => {
             const id = "0";
             const fields = {};
             fetchMock.mockResponseOnce(async (req) => {
-                const parts = req.url.split("/");
-                const id = parts[parts.length - 1];
+                expect(req.url).toMatch(new RegExp(`/${id}$`));
                 expect(req.method).toBe("PATCH");
                 const body = await req.json();
                 expect(body.fields).toEqual(fields);
@@ -209,8 +207,7 @@ describe("Airtable", () => {
             const id = "0";
             const fields = {};
             fetchMock.mockResponseOnce(async (req) => {
-                const parts = req.url.split("/");
-                const id = parts[parts.length - 1];
+                expect(req.url).toMatch(new RegExp(`/${id}$`));
                 expect(req.method).toBe("PUT");
                 const body = await req.json();
                 expect(body.fields).toEqual(fields);
@@ -226,6 +223,19 @@ describe("Airtable", () => {
                 true
             );
             expect(record).toMatchObject({ id, fields });
+        });
+    });
+
+    describe("delete", () => {
+        it("should delete a record", async () => {
+            const id = "id";
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.url).toMatch(new RegExp(`/${id}$`));
+                expect(req.method).toBe("DELETE");
+                return JSON.stringify({ id, deleted: true });
+            });
+            const result = await new Airtable("", "", "").delete(id);
+            expect(result).toEqual({ id, deleted: true });
         });
     });
 

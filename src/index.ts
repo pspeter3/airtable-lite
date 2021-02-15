@@ -55,7 +55,7 @@ export class Airtable<T> {
         );
     }
 
-        /**
+    /**
      * Updates a single record.
      * @param id The record ID to update.
      * @param fields The fields to update.
@@ -78,6 +78,19 @@ export class Airtable<T> {
     }
 
     /**
+     * Deletes a record.
+     * @param id The record ID to delete.
+     */
+    async delete(id: string): Promise<AirtableDeletion> {
+        return this._dispatch(
+            new Request(this._createURL(id).toString(), {
+                method: "DELETE",
+                headers: this._createHeaders(false),
+            })
+        );
+    }
+
+    /**
      * Bulk creates a list of record.
      * @param records The records to create.
      * @param typecast Whether to typecast the record.
@@ -85,7 +98,7 @@ export class Airtable<T> {
     async bulkCreate(
         records: ReadonlyArray<T>,
         typecast?: true
-    ): Promise<AirtableRecords<T>> {
+    ): Promise<AirtableRecordsResponse<AirtableRecord<T>>> {
         return this._dispatch(
             new Request(this._createURL().toString(), {
                 method: "POST",
@@ -163,8 +176,16 @@ export interface AirtableRecord<T> {
 /**
  * Generic interface for an object containing Airtable Records.
  */
-export interface AirtableRecords<T> {
-    readonly records: ReadonlyArray<AirtableRecord<T>>;
+export interface AirtableRecordsResponse<T> {
+    readonly records: ReadonlyArray<T>;
+}
+
+/**
+ * Interface for Airtable deletion response.
+ */
+export interface AirtableDeletion {
+    readonly id: string;
+    readonly deleted: boolean;
 }
 
 interface AirtableErrorResponse {
