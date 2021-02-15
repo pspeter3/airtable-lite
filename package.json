@@ -6,9 +6,10 @@
   "scripts": {
     "compile": "tsc",
     "fix": "npm run fix:format",
-    "test": "npm run test:format",
+    "test": "npm run test:format && npm run test:spec",
     "fix:format": "prettier --write 'src/**/*'",
     "test:format": "prettier --check 'src/**/*'",
+    "test:spec": "jest --ci",
     "precompile": "rm -rf dist"
   },
   "repository": {
@@ -26,8 +27,15 @@
   },
   "homepage": "https://github.com/pspeter3/airtable-lite#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.20",
+    "jest": "^26.6.3",
     "prettier": "^2.2.1",
+    "ts-jest": "^26.5.1",
     "typescript": "^4.1.5"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "preset": "ts-jest"
   },
   "prettier": {
     "tabWidth": 4
