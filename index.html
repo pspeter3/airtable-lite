@@ -62,6 +62,92 @@
 					<h1>airtable-lite</h1>
 				</a>
 				<p>Light weight type safe Airtable API client</p>
+				<a href="#requirements" id="requirements" style="color: inherit; text-decoration: none;">
+					<h2>Requirements</h2>
+				</a>
+				<ul>
+					<li>  Fetch</li>
+					<li>  ES6</li>
+					<li>  Airtable Account</li>
+				</ul>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<ul>
+					<li>  Find your Airtable API Key. Look <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-">here</a> for instructions.</li>
+					<li>  Find your Base ID from the <a href="https://airtable.com/api">Airtable API</a> documentation.</li>
+					<li>  Install the library <code>npm install airtable-lite</code>.</li>
+				</ul>
+				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
+					<h2>Examples</h2>
+				</a>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">Airtable</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">AirtableDirection</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">AirtableError</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">createAirtableClient</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;airtable-lite&quot;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Constants</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">API_KEY</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;secret&quot;</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">BASE_ID</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;baseID&quot;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// A few ways to create tables</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">users</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Airtable</span><span style="color: #000000">&lt;{ </span><span style="color: #001080">Name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">; </span><span style="color: #001080">Notes</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> }&gt;(</span>
+<span style="color: #000000">    </span><span style="color: #0070C1">API_KEY</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0070C1">BASE_ID</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;User&quot;</span>
+<span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">comments</span><span style="color: #000000">: </span><span style="color: #267F99">Airtable</span><span style="color: #000000">&lt;{ </span><span style="color: #001080">Name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">; </span><span style="color: #001080">User</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> }&gt; = </span><span style="color: #795E26">createAirtableClient</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #0070C1">API_KEY</span>
+<span style="color: #000000">)(</span><span style="color: #0070C1">BASE_ID</span><span style="color: #000000">)(</span><span style="color: #A31515">&quot;Comments&quot;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">createBase</span><span style="color: #000000"> = </span><span style="color: #795E26">createAirtableClient</span><span style="color: #000000">(</span><span style="color: #0070C1">API_KEY</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">createTable</span><span style="color: #000000"> = </span><span style="color: #795E26">createBase</span><span style="color: #000000">(</span><span style="color: #0070C1">BASE_ID</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">likes</span><span style="color: #000000"> = </span><span style="color: #795E26">createTable</span><span style="color: #000000">&lt;{ </span><span style="color: #001080">Name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">; </span><span style="color: #001080">Count</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000"> }&gt;(</span><span style="color: #A31515">&quot;Likes&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// CRUD operations</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">id</span><span style="color: #000000"> } = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">Name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Test&quot;</span><span style="color: #000000"> });</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">update</span><span style="color: #000000">(</span><span style="color: #001080">id</span><span style="color: #000000">, { </span><span style="color: #001080">Notes:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Safe&quot;</span><span style="color: #000000"> });</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">update</span><span style="color: #000000">(</span><span style="color: #001080">id</span><span style="color: #000000">, { </span><span style="color: #001080">Notes:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Destructive&quot;</span><span style="color: #000000"> }, </span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">find</span><span style="color: #000000">(</span><span style="color: #001080">id</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">delete</span><span style="color: #000000">(</span><span style="color: #001080">id</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// Bulk operations</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">comments</span><span style="color: #000000">.</span><span style="color: #795E26">bulkCreate</span><span style="color: #000000">([{ </span><span style="color: #001080">Name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;First!&quot;</span><span style="color: #000000">, </span><span style="color: #001080">User:</span><span style="color: #000000"> </span><span style="color: #001080">id</span><span style="color: #000000"> }, { </span><span style="color: #001080">Name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Test&quot;</span><span style="color: #000000"> }]);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">comments</span><span style="color: #000000">.</span><span style="color: #795E26">bulkUpdate</span><span style="color: #000000">([</span>
+<span style="color: #000000">    { </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;1&quot;</span><span style="color: #000000">, </span><span style="color: #001080">fields:</span><span style="color: #000000"> { </span><span style="color: #001080">Name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Second!&quot;</span><span style="color: #000000"> } },</span>
+<span style="color: #000000">    { </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;2&quot;</span><span style="color: #000000">, </span><span style="color: #001080">fields:</span><span style="color: #000000"> { </span><span style="color: #001080">User:</span><span style="color: #000000"> </span><span style="color: #001080">id</span><span style="color: #000000"> } },</span>
+<span style="color: #000000">]);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">comments</span><span style="color: #000000">.</span><span style="color: #795E26">bulkDelete</span><span style="color: #000000">([</span><span style="color: #A31515">&quot;1&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;2&quot;</span><span style="color: #000000">]);</span>
+
+<span style="color: #008000">// Select</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">likes</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">({ </span><span style="color: #001080">maxRecords:</span><span style="color: #000000"> </span><span style="color: #098658">10</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// Project with type safety.</span>
+<span style="color: #008000">// The `fields` option will only take valid field names.</span>
+<span style="color: #008000">// The records will only have &#039;Name&#039; available in this example.</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">likes</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">({ </span><span style="color: #001080">fields:</span><span style="color: #000000"> [</span><span style="color: #A31515">&quot;Name&quot;</span><span style="color: #000000">] });</span>
+<span style="color: #008000">// Sort with type safety.</span>
+<span style="color: #008000">// The `sort` option will only take valid field names.</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">likes</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">sort:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        { </span><span style="color: #001080">field:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Name&quot;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">field:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Count&quot;</span><span style="color: #000000">, </span><span style="color: #001080">direction:</span><span style="color: #000000"> </span><span style="color: #001080">AirtableDirection</span><span style="color: #000000">.</span><span style="color: #001080">Descending</span><span style="color: #000000"> },</span>
+<span style="color: #000000">    ],</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Also have type safe error handling</span>
+<span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">users</span><span style="color: #000000">.</span><span style="color: #795E26">find</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;1&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000"> </span><span style="color: #0000FF">instanceof</span><span style="color: #000000"> </span><span style="color: #267F99">AirtableError</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">.</span><span style="color: #001080">status</span><span style="color: #000000">, </span><span style="color: #001080">err</span><span style="color: #000000">.</span><span style="color: #001080">type</span><span style="color: #000000">, </span><span style="color: #001080">err</span><span style="color: #000000">.</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
+				<p>TypeDoc documentation can be found on the <a href="https://pspeter3.github.io/airtable-lite/">project homepage</a>.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -90,13 +176,10 @@
 						<a href="interfaces/airtablerecord.html" class="tsd-kind-icon">Airtable<wbr>Record</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="interfaces/airtablerecordsresponse.html" class="tsd-kind-icon">Airtable<wbr>Records<wbr>Response</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="interfaces/airtablerecordsresponsewithoffset.html" class="tsd-kind-icon">Airtable<wbr>Records<wbr>Response<wbr>With<wbr>Offset</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="interfaces/airtableselectoptions.html" class="tsd-kind-icon">Airtable<wbr>Select<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/airtableselection.html" class="tsd-kind-icon">Airtable<wbr>Selection</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="interfaces/airtablesortoption.html" class="tsd-kind-icon">Airtable<wbr>Sort<wbr>Option</a>
