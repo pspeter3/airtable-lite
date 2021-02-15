@@ -41,17 +41,19 @@ export class Airtable<T> {
     }
 
     /**
-     * Creates a list of records.
-     * @param records The records to create.
+     * Creates a record.
+     * @param fields The fields of the record to create.
+     * @param typecast Whether to typecast the record.
      */
     async create(
-        records: ReadonlyArray<AirtableFields<T>>
-    ): Promise<AirtableRecords<T>> {
+        fields: T,
+        typecast: AirtableTypecast = undefined
+    ): Promise<AirtableRecord<T>> {
         return this._dispatch(
             new Request(this._createURL().toString(), {
                 method: "POST",
                 headers: this._createHeaders(),
-                body: JSON.stringify({ records }),
+                body: JSON.stringify({ fields, typecast }),
             })
         );
     }
@@ -130,6 +132,12 @@ export interface AirtableRecord<T> extends AirtableFields<T> {
 export interface AirtableRecords<T> {
     readonly records: ReadonlyArray<AirtableRecord<T>>;
 }
+
+/**
+ * Determines whether Airtable will typecast values.
+ * Disabled by default.
+ */
+export type AirtableTypecast = true | undefined;
 
 interface AirtableErrorResponse {
     readonly error: {

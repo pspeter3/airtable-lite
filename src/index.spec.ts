@@ -125,27 +125,38 @@ describe("Airtable", () => {
 
     describe("create", () => {
         it("should create a record", async () => {
+            const fields = {};
+            const data = {
+                id: "0",
+                createdTime: new Date().toString(),
+                fields,
+            };
             fetchMock.mockResponseOnce(async (req) => {
                 expect(req.method).toBe("POST");
-                const body: {
-                    records: { fields: Record<string, unknown> }[];
-                } = await req.json();
-                return JSON.stringify({
-                    records: body.records.map(({ fields }, index) => ({
-                        id: index,
-                        createdTime: new Date().toString(),
-                        fields,
-                    })),
-                });
+                const body = await req.json();
+                expect(body.fields).toEqual(fields);
+                return JSON.stringify(data);
             });
-            const { records } = await new Airtable("", "", "").create([
-                { fields: {} },
-                { fields: {} },
-            ]);
-            expect(records).toMatchObject([
-                { id: 0, fields: {} },
-                { id: 1, fields: {} },
-            ]);
+            const record = await new Airtable("", "", "").create(fields);
+            expect(record).toEqual(data);
+        });
+
+        it("should create a record with typecast", async () => {
+            const fields = {};
+            const data = {
+                id: "0",
+                createdTime: new Date().toString(),
+                fields,
+            };
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("POST");
+                const body = await req.json();
+                expect(body.fields).toEqual(fields);
+                expect(body.typecast).toBe(true);
+                return JSON.stringify(data);
+            });
+            const record = await new Airtable("", "", "").create(fields, true);
+            expect(record).toEqual(data);
         });
     });
 });
