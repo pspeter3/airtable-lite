@@ -1,11 +1,13 @@
 {
   "name": "airtable-lite",
-  "version": "0.1.0-0",
+  "version": "0.2.0",
   "description": "Light weight type safe Airtable API client",
   "type": "module",
   "main": "dist/index.js",
   "files": [
-    "./dist/*"
+    "./dist/index.d.ts",
+    "./dist/index.js",
+    "./dist/index.js.map"
   ],
   "scripts": {
     "build": "tsc",
