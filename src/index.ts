@@ -30,7 +30,7 @@ export class Airtable<T> {
 
     async select<K extends keyof T>(
         options?: AirtableSelectOptions<T, K>
-    ): Promise<AirtableRecordsResponseWithOffset<AirtableRecord<Pick<T, K>>>> {
+    ): Promise<AirtableSelection<AirtableRecord<Pick<T, K>>>> {
         const url = this._createURL();
         if (options !== undefined) {
             for (const [key, value] of Object.entries(options)) {
@@ -93,7 +93,10 @@ export class Airtable<T> {
      * @param fields The fields of the record to create.
      * @param typecast Whether to typecast the record.
      */
-    async create(fields: T, typecast?: true): Promise<AirtableRecord<T>> {
+    async create(
+        fields: Partial<T>,
+        typecast?: true
+    ): Promise<AirtableRecord<T>> {
         return this._dispatch(
             new Request(this._createURL().toString(), {
                 method: "POST",
@@ -144,10 +147,12 @@ export class Airtable<T> {
      * @param typecast Whether to typecast the record.
      */
     async bulkCreate(
-        records: ReadonlyArray<T>,
+        records: ReadonlyArray<Partial<T>>,
         typecast?: true
-    ): Promise<AirtableRecordsResponse<AirtableRecord<T>>> {
-        return this._dispatch(
+    ): Promise<ReadonlyArray<AirtableRecord<T>>> {
+        const data = await this._dispatch<
+            AirtableRecordsResponse<AirtableRecord<T>>
+        >(
             new Request(this._createURL().toString(), {
                 method: "POST",
                 headers: this._createHeaders(),
@@ -157,6 +162,7 @@ export class Airtable<T> {
                 }),
             })
         );
+        return data.records;
     }
 
     /**
@@ -171,33 +177,37 @@ export class Airtable<T> {
         >,
         destructive = false,
         typecast?: true
-    ): Promise<AirtableRecordsResponse<AirtableRecord<T>>> {
-        return this._dispatch(
+    ): Promise<ReadonlyArray<AirtableRecord<T>>> {
+        const data = await this._dispatch<
+            AirtableRecordsResponse<AirtableRecord<T>>
+        >(
             new Request(this._createURL().toString(), {
                 method: destructive ? "PUT" : "PATCH",
                 headers: this._createHeaders(),
                 body: JSON.stringify({ records, typecast }),
             })
         );
+        return data.records;
     }
 
     /**
      * Bulk deletes a list of records.
      * @param ids The record IDs to delete.
      */
-    async bulkDelete(
-        ids: string[]
-    ): Promise<AirtableRecordsResponse<AirtableDeletion>> {
+    async bulkDelete(ids: string[]): Promise<ReadonlyArray<AirtableDeletion>> {
         const url = this._createURL();
         for (const id of ids) {
             url.searchParams.append("records[]", id);
         }
-        return this._dispatch(
+        const data = await this._dispatch<
+            AirtableRecordsResponse<AirtableDeletion>
+        >(
             new Request(url.toString(), {
                 method: "DELETE",
                 headers: this._createHeaders(),
             })
         );
+        return data.records;
     }
 
     /**
@@ -281,17 +291,10 @@ export interface AirtableRecord<T> {
 }
 
 /**
- * Generic interface for an object containing Airtable Records.
+ * Interface for Airtable selection with pagination information.
  */
-export interface AirtableRecordsResponse<T> {
+export interface AirtableSelection<T> {
     readonly records: ReadonlyArray<T>;
-}
-
-/**
- * Interface for paginated Airtable records response.
- */
-export interface AirtableRecordsResponseWithOffset<T>
-    extends AirtableRecordsResponse<T> {
     readonly offset?: string;
 }
 
@@ -333,6 +336,10 @@ export interface AirtableSelectOptions<T, K> {
     readonly timeZone?: string;
     readonly userLocale?: string;
     readonly offset?: string;
+}
+
+interface AirtableRecordsResponse<T> {
+    readonly records: ReadonlyArray<T>;
 }
 
 interface AirtableErrorResponse {
