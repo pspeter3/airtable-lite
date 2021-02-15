@@ -4,9 +4,12 @@
   "description": "Light weight type safe Airtable API client",
   "main": "dist/index.js",
   "scripts": {
-    "precompile": "rm -rf dist",
     "compile": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "fix": "npm run fix:format",
+    "test": "npm run test:format",
+    "fix:format": "prettier --write 'src/**/*'",
+    "test:format": "prettier --check 'src/**/*'",
+    "precompile": "rm -rf dist"
   },
   "repository": {
     "type": "git",
@@ -23,6 +26,10 @@
   },
   "homepage": "https://github.com/pspeter3/airtable-lite#readme",
   "devDependencies": {
+    "prettier": "^2.2.1",
     "typescript": "^4.1.5"
+  },
+  "prettier": {
+    "tabWidth": 4
   }
 }
