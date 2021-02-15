@@ -28,6 +28,54 @@ export class Airtable<T> {
         this._table = table;
     }
 
+    async select<K extends keyof T>(
+        options?: AirtableSelectOptions<T, K>
+    ): Promise<AirtableRecordsResponseWithOffset<AirtableRecord<Pick<T, K>>>> {
+        const url = this._createURL();
+        if (options !== undefined) {
+            for (const [key, value] of Object.entries(options)) {
+                switch (key) {
+                    case "fields": {
+                        for (const field of value as ReadonlyArray<string>) {
+                            url.searchParams.append("fields[]", field);
+                        }
+                        break;
+                    }
+                    case "sort": {
+                        for (const [
+                            index,
+                            { field, direction },
+                        ] of (value as ReadonlyArray<
+                            AirtableSortOption<string>
+                        >).entries()) {
+                            url.searchParams.append(
+                                `sort[${index}][field]`,
+                                field
+                            );
+                            if (direction !== undefined) {
+                                url.searchParams.append(
+                                    `sort[${index}][direction]`,
+                                    direction
+                                );
+                            }
+                        }
+                        break;
+                    }
+                    default: {
+                        url.searchParams.append(
+                            key,
+                            (value as string | number).toString()
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+        return this._dispatch(
+            new Request(url.toString(), { headers: this._createHeaders() })
+        );
+    }
+
     /**
      * Finds a record by ID.
      * @param id The Record ID.
@@ -231,11 +279,51 @@ export interface AirtableRecordsResponse<T> {
 }
 
 /**
+ * Interface for paginated Airtable records response.
+ */
+export interface AirtableRecordsResponseWithOffset<T>
+    extends AirtableRecordsResponse<T> {
+    readonly offset?: string;
+}
+
+/**
  * Interface for Airtable deletion response.
  */
 export interface AirtableDeletion {
     readonly id: string;
     readonly deleted: boolean;
+}
+
+/**
+ * Enum for Airtable sort direction.
+ */
+export enum AirtableDirection {
+    Ascending = "asc",
+    Descending = "desc",
+}
+
+/**
+ * Interface for Airtable sorting options.
+ */
+export interface AirtableSortOption<K> {
+    readonly field: K;
+    readonly direction?: AirtableDirection;
+}
+
+/**
+ * Interface for Aitable select options.
+ */
+export interface AirtableSelectOptions<T, K> {
+    readonly fields?: ReadonlyArray<K>;
+    readonly filterByFormula?: string;
+    readonly maxRecords?: number;
+    readonly pageSize?: number;
+    readonly sort?: ReadonlyArray<AirtableSortOption<keyof T>>;
+    readonly view?: string;
+    readonly cellFormat?: "json" | "string";
+    readonly timeZone?: string;
+    readonly userLocale?: string;
+    readonly offset?: string;
 }
 
 interface AirtableErrorResponse {

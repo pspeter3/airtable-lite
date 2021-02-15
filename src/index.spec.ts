@@ -1,8 +1,10 @@
 import fetchMock from "jest-fetch-mock";
 import {
     Airtable,
+    AirtableDirection,
     AirtableError,
     AirtableRecord,
+    AirtableSelectOptions,
     AIRTABLE_API_URL,
     AIRTABLE_API_VERSION,
 } from "./index";
@@ -102,6 +104,101 @@ describe("Airtable", () => {
             );
             await expect(() => client.find("id")).rejects.toThrowError(
                 new AirtableError(status, type, message)
+            );
+        });
+    });
+
+    describe("select", () => {
+        interface Example {
+            readonly Name: string;
+            readonly Notes: string;
+            readonly Count: number;
+        }
+
+        it("should return a list of records without options", async () => {
+            fetchMock.mockResponseOnce(JSON.stringify({ records: [] }));
+            const client = new Airtable<Example>("", "", "Examples");
+            const { records, offset } = await client.select();
+            expect(records).toHaveLength(0);
+            expect(offset).toBeUndefined();
+        });
+
+        it("should serialize options correctly", async () => {
+            const options = {
+                fields: ["Name", "Notes"],
+                filterByFormula: "{Name} = 'Test'",
+                maxRecords: 10,
+                pageSize: 5,
+                sort: [
+                    {
+                        field: "Name",
+                    },
+                    { field: "Count", direction: AirtableDirection.Descending },
+                ],
+                view: "Grid",
+                cellFormat: "json",
+                timeZone: "America/Los Angeles",
+                userLocale: "en-us",
+                offset: "0",
+            };
+            fetchMock.mockResponseOnce(async (req) => {
+                const url = new URL(req.url);
+                expect(url.searchParams.getAll("fields[]")).toEqual(
+                    options.fields
+                );
+                for (const [
+                    index,
+                    { field, direction },
+                ] of options.sort.entries()) {
+                    expect(url.searchParams.get(`sort[${index}][field]`)).toBe(
+                        field
+                    );
+                    expect(
+                        url.searchParams.get(`sort[${index}][direction]`)
+                    ).toBe(direction !== undefined ? direction : null);
+                }
+                const keys = Object.keys(options).filter(
+                    (key) => key !== "fields" && key !== "sort"
+                ) as ReadonlyArray<keyof typeof options>;
+                for (const key of keys) {
+                    expect(url.searchParams.get(key)).toEqual(
+                        options[key].toString()
+                    );
+                }
+                return JSON.stringify({ records: [] });
+            });
+            const client = new Airtable<Example>("", "", "Examples");
+            const { records, offset } = await client.select(
+                options as AirtableSelectOptions<Example, "Name" | "Notes">
+            );
+            expect(records).toHaveLength(0);
+            expect(offset).toBeUndefined();
+        });
+
+        it("should infer types correctly", async () => {
+            const client = new Airtable<Example>("", "", "Examples");
+            const records: ReadonlyArray<AirtableRecord<Example>> = [];
+            fetchMock.mockResponse(JSON.stringify({ records }));
+            const { records: nameOnly } = await client.select({
+                fields: ["Name"],
+            });
+            expect(
+                nameOnly as ReadonlyArray<AirtableRecord<Pick<Example, "Name">>>
+            ).toEqual(records);
+            const { records: projectionWithSort } = await client.select({
+                fields: ["Name", "Notes"],
+                sort: [{ field: "Count" }],
+            });
+            expect(
+                projectionWithSort as ReadonlyArray<
+                    AirtableRecord<Pick<Example, "Name" | "Notes">>
+                >
+            ).toEqual(records);
+            const { records: withSort } = await client.select({
+                sort: [{ field: "Count" }],
+            });
+            expect(withSort as ReadonlyArray<AirtableRecord<Example>>).toEqual(
+                records
             );
         });
     });
