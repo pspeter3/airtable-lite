@@ -111,6 +111,28 @@ export class Airtable<T> {
         );
     }
 
+    /**
+     * Bulk updates records.
+     * @param records The records to update.
+     * @param destructive Whether to clear unspecified fields.
+     * @param typecast Whether to typecast the record.
+     */
+    async bulkUpdate(
+        records: ReadonlyArray<
+            Pick<AirtableRecord<Partial<T>>, "id" | "fields">
+        >,
+        destructive = false,
+        typecast?: true
+    ): Promise<AirtableRecordsResponse<AirtableRecord<T>>> {
+        return this._dispatch(
+            new Request(this._createURL().toString(), {
+                method: destructive ? "PUT" : "PATCH",
+                headers: this._createHeaders(),
+                body: JSON.stringify({ records, typecast }),
+            })
+        );
+    }
+
     private async _dispatch<R>(req: Request): Promise<R> {
         const res = await fetch(req);
         const data = await res.json();
