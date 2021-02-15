@@ -45,13 +45,32 @@ export class Airtable<T> {
      * @param fields The fields of the record to create.
      * @param typecast Whether to typecast the record.
      */
-    async create(
-        fields: T,
-        typecast: AirtableTypecast = undefined
-    ): Promise<AirtableRecord<T>> {
+    async create(fields: T, typecast?: true): Promise<AirtableRecord<T>> {
         return this._dispatch(
             new Request(this._createURL().toString(), {
                 method: "POST",
+                headers: this._createHeaders(),
+                body: JSON.stringify({ fields, typecast }),
+            })
+        );
+    }
+
+        /**
+     * Updates a single record.
+     * @param id The record ID to update.
+     * @param fields The fields to update.
+     * @param destructive Whether to clear unspecified fields.
+     * @param typecast Whether to typecast the record.
+     */
+    async update(
+        id: string,
+        fields: Partial<T>,
+        destructive = false,
+        typecast?: true
+    ): Promise<AirtableRecord<T>> {
+        return this._dispatch(
+            new Request(this._createURL(id).toString(), {
+                method: destructive ? "PUT" : "PATCH",
                 headers: this._createHeaders(),
                 body: JSON.stringify({ fields, typecast }),
             })
@@ -65,7 +84,7 @@ export class Airtable<T> {
      */
     async bulkCreate(
         records: ReadonlyArray<T>,
-        typecast: AirtableTypecast = undefined
+        typecast?: true
     ): Promise<AirtableRecords<T>> {
         return this._dispatch(
             new Request(this._createURL().toString(), {
@@ -133,18 +152,12 @@ export class AirtableError extends Error {
 }
 
 /**
- * Generic interface for an object that has Airtable fields property.
- */
-export interface AirtableFields<T> {
-    readonly fields: T;
-}
-
-/**
  * Generic interface for an Airtable Record.
  */
-export interface AirtableRecord<T> extends AirtableFields<T> {
+export interface AirtableRecord<T> {
     readonly id: string;
     readonly createdTime: string;
+    readonly fields: T;
 }
 
 /**
@@ -153,12 +166,6 @@ export interface AirtableRecord<T> extends AirtableFields<T> {
 export interface AirtableRecords<T> {
     readonly records: ReadonlyArray<AirtableRecord<T>>;
 }
-
-/**
- * Determines whether Airtable will typecast values.
- * Disabled by default.
- */
-export type AirtableTypecast = true | undefined;
 
 interface AirtableErrorResponse {
     readonly error: {

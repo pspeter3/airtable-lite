@@ -160,6 +160,75 @@ describe("Airtable", () => {
         });
     });
 
+    describe("update", () => {
+        it("should update a record", async () => {
+            const id = "0";
+            const fields = {};
+            fetchMock.mockResponseOnce(async (req) => {
+                const parts = req.url.split("/");
+                const id = parts[parts.length - 1];
+                expect(req.method).toBe("PATCH");
+                const body = await req.json();
+                expect(body.fields).toEqual(fields);
+                return JSON.stringify({
+                    id,
+                    createdTime: new Date(),
+                    fields: body.fields,
+                });
+            });
+            const record = await new Airtable("", "", "").update(id, fields);
+            expect(record).toMatchObject({ id, fields });
+        });
+
+        it("should update a record with typecast", async () => {
+            const id = "0";
+            const fields = {};
+            fetchMock.mockResponseOnce(async (req) => {
+                const parts = req.url.split("/");
+                const id = parts[parts.length - 1];
+                expect(req.method).toBe("PATCH");
+                const body = await req.json();
+                expect(body.fields).toEqual(fields);
+                expect(body.typecast).toBe(true);
+                return JSON.stringify({
+                    id,
+                    createdTime: new Date(),
+                    fields: body.fields,
+                });
+            });
+            const record = await new Airtable("", "", "").update(
+                id,
+                fields,
+                false,
+                true
+            );
+            expect(record).toMatchObject({ id, fields });
+        });
+
+        it("should update a record destructively", async () => {
+            const id = "0";
+            const fields = {};
+            fetchMock.mockResponseOnce(async (req) => {
+                const parts = req.url.split("/");
+                const id = parts[parts.length - 1];
+                expect(req.method).toBe("PUT");
+                const body = await req.json();
+                expect(body.fields).toEqual(fields);
+                return JSON.stringify({
+                    id,
+                    createdTime: new Date(),
+                    fields: body.fields,
+                });
+            });
+            const record = await new Airtable("", "", "").update(
+                id,
+                fields,
+                true
+            );
+            expect(record).toMatchObject({ id, fields });
+        });
+    });
+
     describe("bulkCreate", () => {
         it("should create a list of records", async () => {
             fetchMock.mockResponseOnce(async (req) => {
