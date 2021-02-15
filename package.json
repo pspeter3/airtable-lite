@@ -1,6 +1,6 @@
 {
   "name": "airtable-lite",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Light weight type safe Airtable API client",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -20,7 +20,7 @@
     "fix:lint": "eslint 'src/**/*' --fix",
     "test:format": "prettier --check 'src/**/*'",
     "test:lint": "eslint 'src/**/*'",
-    "test:spec": "jest --ci"
+    "test:spec": "NODE_OPTIONS=--experimental-vm-modules jest --ci"
   },
   "repository": {
     "type": "git",

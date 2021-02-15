@@ -282,10 +282,15 @@ export const createAirtableClient = (apiKey: string) => (base: string) => <T>(
 /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 
 /**
+ * AirtableID type.
+ */
+export type AirtableID = string;
+
+/**
  * Generic interface for an Airtable Record.
  */
 export interface AirtableRecord<T> {
-    readonly id: string;
+    readonly id: AirtableID;
     readonly createdTime: string;
     readonly fields: T;
 }
