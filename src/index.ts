@@ -262,6 +262,15 @@ export class AirtableError extends Error {
     }
 }
 
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/**
+ * Factory for creating Airtable instances.
+ */
+export const createAirtableClient = (apiKey: string) => (base: string) => <T>(
+    table: string
+) => new Airtable<T>(apiKey, base, table);
+/* eslint-enable @typescript-eslint/explicit-module-boundary-types */
+
 /**
  * Generic interface for an Airtable Record.
  */
