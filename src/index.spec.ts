@@ -18,15 +18,17 @@ describe("Constants", () => {
 
 describe("AirtableError", () => {
     it("should have the correct properties", () => {
+        const status = 401;
         const type = "AUTHENTICATION_REQUIRED";
         const message = "Authentication required";
-        const err = new AirtableError(type, message);
+        const err = new AirtableError(status, type, message);
+        expect(err.status).toBe(status);
         expect(err.type).toBe(type);
         expect(err.message).toBe(message);
     });
 
     it("should have the correct inheritance", () => {
-        const err = new AirtableError("", "");
+        const err = new AirtableError(500, "", "");
         expect(err).toBeInstanceOf(AirtableError);
         expect(err).toBeInstanceOf(Error);
     });
@@ -84,18 +86,21 @@ describe("Airtable", () => {
         });
 
         it("should handle errors", async () => {
+            const status = 401;
+            const type = "AUTHENTICATION_REQUIRED";
+            const message = "Authentication required";
             const client = new Airtable("key", "base", "table");
             fetchMock.mockResponseOnce(
                 JSON.stringify({
                     error: {
-                        type: "AUTHENTICATION_REQUIRED",
-                        message: "Authentication required",
+                        type,
+                        message,
                     },
                 }),
-                { status: 401 }
+                { status }
             );
             await expect(() => client.find("id")).rejects.toThrowError(
-                AirtableError
+                new AirtableError(status, type, message)
             );
         });
     });

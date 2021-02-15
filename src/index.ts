@@ -45,7 +45,7 @@ export class Airtable<T> {
         const data = await res.json();
         if (!res.ok) {
             const { error } = data as AirtableErrorResponse;
-            throw new AirtableError(error.type, error.message);
+            throw new AirtableError(res.status, error.type, error.message);
         }
         return data;
     }
@@ -71,15 +71,24 @@ export class Airtable<T> {
  * Subclass of error to represent Airtable API specific errors.
  */
 export class AirtableError extends Error {
+    /**
+     * The HTTP Status Code.
+     */
+    readonly status: number;
+    /**
+     * The Airtable API Error Type.
+     */
     readonly type: string;
 
     /**
      * Creates an Airtable API error.
-     * @param type The Airtable Error type.
-     * @param message The Airtable Error message.
+     * @param status The HTTP Status Code.
+     * @param type The Airtable Error Type.
+     * @param message The Airtable Error Message.
      */
-    constructor(type: string, message: string) {
+    constructor(status: number, type: string, message: string) {
         super(message);
+        this.status = status;
         this.type = type;
     }
 }
