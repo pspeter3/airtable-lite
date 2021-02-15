@@ -1,4 +1,9 @@
-import { AirtableError, AIRTABLE_API_URL, AIRTABLE_API_VERSION } from "./index";
+import {
+    Airtable,
+    AirtableError,
+    AIRTABLE_API_URL,
+    AIRTABLE_API_VERSION,
+} from "./index";
 
 describe("Constants", () => {
     it("should have Airtable API URL", () => {
@@ -23,5 +28,11 @@ describe("AirtableError", () => {
         const err = new AirtableError("", "");
         expect(err).toBeInstanceOf(AirtableError);
         expect(err).toBeInstanceOf(Error);
+    });
+});
+
+describe("Airtable", () => {
+    it("should support a simple constructor", () => {
+        expect(() => new Airtable("", "", "")).not.toThrow();
     });
 });
