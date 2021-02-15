@@ -85,7 +85,7 @@ export class Airtable<T> {
         return this._dispatch(
             new Request(this._createURL(id).toString(), {
                 method: "DELETE",
-                headers: this._createHeaders(false),
+                headers: this._createHeaders(),
             })
         );
     }
@@ -147,11 +147,15 @@ export class Airtable<T> {
         return this._dispatch(
             new Request(url.toString(), {
                 method: "DELETE",
-                headers: this._createHeaders(false),
+                headers: this._createHeaders(),
             })
         );
     }
 
+    /**
+     * Dispatches a request and handles errors.
+     * @param req The Request to dispatch.
+     */
     private async _dispatch<R>(req: Request): Promise<R> {
         const res = await fetch(req);
         const data = await res.json();
@@ -162,6 +166,10 @@ export class Airtable<T> {
         return data;
     }
 
+    /**
+     * Creates an API URL for the Airtable base and table.
+     * @param path The path segments to include.
+     */
     private _createURL(...path: string[]): URL {
         return new URL(
             [AIRTABLE_API_VERSION, this._base, this._table, ...path].join("/"),
@@ -169,12 +177,13 @@ export class Airtable<T> {
         );
     }
 
-    private _createHeaders(json = true): Headers {
+    /**
+     * Creates the appropriate headers for the Airtable API.
+     */
+    private _createHeaders(): Headers {
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${this._apiKey}`);
-        if (json) {
-            headers.set("Content-Type", "application/json");
-        }
+        headers.set("Content-Type", "application/json");
         return headers;
     }
 }
