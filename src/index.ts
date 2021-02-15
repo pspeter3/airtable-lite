@@ -58,6 +58,27 @@ export class Airtable<T> {
         );
     }
 
+    /**
+     * Bulk creates a list of record.
+     * @param records The records to create.
+     * @param typecast Whether to typecast the record.
+     */
+    async bulkCreate(
+        records: ReadonlyArray<T>,
+        typecast: AirtableTypecast = undefined
+    ): Promise<AirtableRecords<T>> {
+        return this._dispatch(
+            new Request(this._createURL().toString(), {
+                method: "POST",
+                headers: this._createHeaders(),
+                body: JSON.stringify({
+                    records: records.map((fields) => ({ fields })),
+                    typecast,
+                }),
+            })
+        );
+    }
+
     private async _dispatch<R>(req: Request): Promise<R> {
         const res = await fetch(req);
         const data = await res.json();

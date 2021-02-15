@@ -159,4 +159,54 @@ describe("Airtable", () => {
             expect(record).toEqual(data);
         });
     });
+
+    describe("bulkCreate", () => {
+        it("should create a list of records", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("POST");
+                const body: {
+                    records: { fields: Record<string, unknown> }[];
+                } = await req.json();
+                const records = body.records.map(({ fields }, index) => ({
+                    id: index.toString(),
+                    createdTime: new Date(),
+                    fields,
+                }));
+                return JSON.stringify({ records });
+            });
+            const { records } = await new Airtable("", "", "").bulkCreate([
+                {},
+                {},
+            ]);
+            expect(records).toMatchObject([
+                { id: "0", fields: {} },
+                { id: "1", fields: {} },
+            ]);
+        });
+
+        it("should create a list of records with typecast", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("POST");
+                const body: {
+                    records: { fields: Record<string, unknown> }[];
+                    typecast: boolean;
+                } = await req.json();
+                expect(body.typecast).toBe(true);
+                const records = body.records.map(({ fields }, index) => ({
+                    id: index.toString(),
+                    createdTime: new Date(),
+                    fields,
+                }));
+                return JSON.stringify({ records });
+            });
+            const { records } = await new Airtable("", "", "").bulkCreate(
+                [{}, {}],
+                true
+            );
+            expect(records).toMatchObject([
+                { id: "0", fields: {} },
+                { id: "1", fields: {} },
+            ]);
+        });
+    });
 });
