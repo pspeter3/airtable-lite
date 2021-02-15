@@ -1,21 +1,21 @@
 {
   "name": "airtable-lite",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Light weight type safe Airtable API client",
   "type": "module",
-  "main": "./dist/cjs/index.js",
+  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "exports": {
     "import": "./dist/index.js",
-    "require": "./dist/cjs/index.js"
+    "require": "./dist/index.cjs"
   },
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",
     "docs": "typedoc --out docs src/index.ts",
     "fix": "npm run fix:lint && npm run fix:format",
     "test": "npm run test:format && npm run test:lint && npm run test:spec",
-    "build:esm": "tsc --declaration",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --target esnext --module commonjs src/index.ts && mv src/index.js dist/index.cjs",
     "fix:format": "prettier --write 'src/**/*'",
     "fix:lint": "eslint 'src/**/*' --fix",
     "test:format": "prettier --check 'src/**/*'",
