@@ -1,1 +1,7 @@
-./lib/*.spec*
+.DS_Store
+.github
+coverage
+src
+tsconfig.json
+dist/*.spec.*
+*.tgz
