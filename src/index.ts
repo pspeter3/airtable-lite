@@ -11,7 +11,7 @@ export const AIRTABLE_API_VERSION = "v0";
 /**
  * Airtable client for a single table within a base.
  */
-export class Airtable {
+export class Airtable<T> {
     private readonly _apiKey: string;
     private readonly _base: string;
     private readonly _table: string;
@@ -26,6 +26,44 @@ export class Airtable {
         this._apiKey = apiKey;
         this._base = base;
         this._table = table;
+    }
+
+    /**
+     * Finds a record by ID.
+     * @param id The Record ID.
+     */
+    async find(id: string): Promise<AirtableRecord<T>> {
+        return this._dispatch(
+            new Request(this._createURL(id).toString(), {
+                headers: this._createHeaders(),
+            })
+        );
+    }
+
+    private async _dispatch<R>(req: Request): Promise<R> {
+        const res = await fetch(req);
+        const data = await res.json();
+        if (!res.ok) {
+            const { error } = data as AirtableErrorResponse;
+            throw new AirtableError(error.type, error.message);
+        }
+        return data;
+    }
+
+    private _createURL(...path: string[]): URL {
+        return new URL(
+            [AIRTABLE_API_VERSION, this._base, this._table, ...path].join("/"),
+            AIRTABLE_API_URL
+        );
+    }
+
+    private _createHeaders(json = true): Headers {
+        const headers = new Headers();
+        headers.set("Authorization", `Bearer ${this._apiKey}`);
+        if (json) {
+            headers.set("Content-Type", "application/json");
+        }
+        return headers;
     }
 }
 
@@ -44,4 +82,20 @@ export class AirtableError extends Error {
         super(message);
         this.type = type;
     }
+}
+
+export interface AirtableFields<T> {
+    readonly fields: T;
+}
+
+export interface AirtableRecord<T> extends AirtableFields<T> {
+    readonly id: string;
+    readonly createdTime: string;
+}
+
+interface AirtableErrorResponse {
+    readonly error: {
+        readonly type: string;
+        readonly message: string;
+    };
 }
