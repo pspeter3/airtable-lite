@@ -3,5 +3,5 @@
 coverage
 src
 tsconfig.json
-dist/*.spec.*
+dist/**/*.spec.*
 *.tgz
