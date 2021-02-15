@@ -16,8 +16,7 @@
     "fix:lint": "eslint 'src/**/*' --fix",
     "test:format": "prettier --check 'src/**/*'",
     "test:lint": "eslint 'src/**/*'",
-    "test:spec": "jest --ci",
-    "prepublish": "npm run build"
+    "test:spec": "jest --ci"
   },
   "repository": {
     "type": "git",

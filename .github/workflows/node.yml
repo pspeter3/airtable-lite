@@ -32,6 +32,6 @@ jobs:
                       ${{ runner.OS }}-node-
                       ${{ runner.OS }}-:
             - run: npm ci
-            - run: npm test
+            - run: NODE_OPTIONS=--experimental-vm-modules npm test
             - name: Codecov
               uses: codecov/codecov-action@v1.0.12
