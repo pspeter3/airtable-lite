@@ -2,7 +2,11 @@
   "name": "airtable-lite",
   "version": "0.0.0",
   "description": "Light weight type safe Airtable API client",
+  "type": "module",
   "main": "dist/index.js",
+  "files": [
+    "./dist/*"
+  ],
   "scripts": {
     "build": "tsc",
     "docs": "typedoc --out docs src/index.ts",
@@ -12,7 +16,8 @@
     "fix:lint": "eslint 'src/**/*' --fix",
     "test:format": "prettier --check 'src/**/*'",
     "test:lint": "eslint 'src/**/*'",
-    "test:spec": "jest --ci"
+    "test:spec": "jest --ci",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
