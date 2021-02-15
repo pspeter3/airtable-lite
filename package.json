@@ -3,7 +3,8 @@
   "version": "0.2.0",
   "description": "Light weight type safe Airtable API client",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "./dist/index.d.ts",
     "./dist/index.js",
