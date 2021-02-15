@@ -104,4 +104,48 @@ describe("Airtable", () => {
             );
         });
     });
+
+    describe("find", () => {
+        it("should return a record", async () => {
+            const id = "id";
+            const record = {
+                id,
+                createdTime: new Date().toString(),
+                fields: {},
+            };
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.url).toMatch(new RegExp(`/${id}$`));
+                expect(req.method).toBe("GET");
+                return JSON.stringify(record);
+            });
+            const result = await new Airtable("", "", "").find(id);
+            expect(result).toEqual(record);
+        });
+    });
+
+    describe("create", () => {
+        it("should create a record", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("POST");
+                const body: {
+                    records: { fields: Record<string, unknown> }[];
+                } = await req.json();
+                return JSON.stringify({
+                    records: body.records.map(({ fields }, index) => ({
+                        id: index,
+                        createdTime: new Date().toString(),
+                        fields,
+                    })),
+                });
+            });
+            const { records } = await new Airtable("", "", "").create([
+                { fields: {} },
+                { fields: {} },
+            ]);
+            expect(records).toMatchObject([
+                { id: 0, fields: {} },
+                { id: 1, fields: {} },
+            ]);
+        });
+    });
 });

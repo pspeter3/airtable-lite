@@ -40,6 +40,22 @@ export class Airtable<T> {
         );
     }
 
+    /**
+     * Creates a list of records.
+     * @param records The records to create.
+     */
+    async create(
+        records: ReadonlyArray<AirtableFields<T>>
+    ): Promise<AirtableRecords<T>> {
+        return this._dispatch(
+            new Request(this._createURL().toString(), {
+                method: "POST",
+                headers: this._createHeaders(),
+                body: JSON.stringify({ records }),
+            })
+        );
+    }
+
     private async _dispatch<R>(req: Request): Promise<R> {
         const res = await fetch(req);
         const data = await res.json();
@@ -93,13 +109,26 @@ export class AirtableError extends Error {
     }
 }
 
+/**
+ * Generic interface for an object that has Airtable fields property.
+ */
 export interface AirtableFields<T> {
     readonly fields: T;
 }
 
+/**
+ * Generic interface for an Airtable Record.
+ */
 export interface AirtableRecord<T> extends AirtableFields<T> {
     readonly id: string;
     readonly createdTime: string;
+}
+
+/**
+ * Generic interface for an object containing Airtable Records.
+ */
+export interface AirtableRecords<T> {
+    readonly records: ReadonlyArray<AirtableRecord<T>>;
 }
 
 interface AirtableErrorResponse {
