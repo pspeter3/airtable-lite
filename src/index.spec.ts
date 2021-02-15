@@ -2,6 +2,7 @@ import fetchMock from "jest-fetch-mock";
 import {
     Airtable,
     AirtableError,
+    AirtableRecord,
     AIRTABLE_API_URL,
     AIRTABLE_API_VERSION,
 } from "./index";
@@ -268,7 +269,7 @@ describe("Airtable", () => {
                 expect(req.method).toBe("POST");
                 const body: {
                     records: { fields: Record<string, unknown> }[];
-                    typecast: boolean;
+                    typecast?: boolean;
                 } = await req.json();
                 expect(body.typecast).toBe(true);
                 const records = body.records.map(({ fields }, index) => ({
@@ -286,6 +287,108 @@ describe("Airtable", () => {
                 { id: "0", fields: {} },
                 { id: "1", fields: {} },
             ]);
+        });
+    });
+
+    describe("bulkUpdate", () => {
+        it("should update a list of records", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("PATCH");
+                const body: {
+                    records: ReadonlyArray<
+                        Pick<
+                            AirtableRecord<Record<string, unknown>>,
+                            "id" | "fields"
+                        >
+                    >;
+                } = await req.json();
+                const records = body.records.map((record) => ({
+                    ...record,
+                    createdTime: new Date(),
+                }));
+                return JSON.stringify({ records });
+            });
+            const data = [
+                { id: "0", fields: {} },
+                { id: "1", fields: {} },
+            ];
+            const { records } = await new Airtable("", "", "").bulkUpdate(data);
+            expect(records).toMatchObject(data);
+        });
+
+        it("should update a list of records with typecast", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("PATCH");
+                const body: {
+                    records: ReadonlyArray<
+                        Pick<
+                            AirtableRecord<Record<string, unknown>>,
+                            "id" | "fields"
+                        >
+                    >;
+                    typecast?: boolean;
+                } = await req.json();
+                expect(body.typecast).toBe(true);
+                const records = body.records.map((record) => ({
+                    ...record,
+                    createdTime: new Date(),
+                }));
+                return JSON.stringify({ records });
+            });
+            const data = [
+                { id: "0", fields: {} },
+                { id: "1", fields: {} },
+            ];
+            const { records } = await new Airtable("", "", "").bulkUpdate(
+                data,
+                false,
+                true
+            );
+            expect(records).toMatchObject(data);
+        });
+
+        it("should update a list of records destructively", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("PUT");
+                const body: {
+                    records: ReadonlyArray<
+                        Pick<
+                            AirtableRecord<Record<string, unknown>>,
+                            "id" | "fields"
+                        >
+                    >;
+                } = await req.json();
+                const records = body.records.map((record) => ({
+                    ...record,
+                    createdTime: new Date(),
+                }));
+                return JSON.stringify({ records });
+            });
+            const data = [
+                { id: "0", fields: {} },
+                { id: "1", fields: {} },
+            ];
+            const { records } = await new Airtable("", "", "").bulkUpdate(
+                data,
+                true
+            );
+            expect(records).toMatchObject(data);
+        });
+    });
+
+    describe("bulkDelete", () => {
+        it("should delete a list of records", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                expect(req.method).toBe("DELETE");
+                const url = new URL(req.url);
+                const ids = url.searchParams.getAll("records[]");
+                return JSON.stringify({
+                    records: ids.map((id) => ({ id, deleted: true })),
+                });
+            });
+            const ids = ["1", "2", "3"];
+            const { records } = await new Airtable("", "", "").bulkDelete(ids);
+            expect(records).toEqual(ids.map((id) => ({ id, deleted: true })));
         });
     });
 });
