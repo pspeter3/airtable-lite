@@ -1,0 +1,23 @@
+{
+  "name": "airtable-lite",
+  "version": "0.0.0",
+  "description": "Light weight type safe Airtable API client",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pspeter3/airtable-lite.git"
+  },
+  "keywords": [
+    "airtable",
+    "typescript"
+  ],
+  "author": "pspeter3",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pspeter3/airtable-lite/issues"
+  },
+  "homepage": "https://github.com/pspeter3/airtable-lite#readme"
+}
