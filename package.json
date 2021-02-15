@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/pspeter3/airtable-lite/issues"
   },
-  "homepage": "https://github.com/pspeter3/airtable-lite#readme",
+  "homepage": "https://pspeter3.github.io/airtable-lite/",
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@typescript-eslint/eslint-plugin": "^4.15.0",

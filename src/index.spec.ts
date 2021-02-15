@@ -352,10 +352,7 @@ describe("Airtable", () => {
                 }));
                 return JSON.stringify({ records });
             });
-            const records = await new Airtable("", "", "").bulkCreate([
-                {},
-                {},
-            ]);
+            const records = await new Airtable("", "", "").bulkCreate([{}, {}]);
             expect(records).toMatchObject([
                 { id: "0", fields: {} },
                 { id: "1", fields: {} },
