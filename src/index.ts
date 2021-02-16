@@ -11,7 +11,7 @@ export const AIRTABLE_API_VERSION = "v0";
 /**
  * Airtable client for a single table within a base.
  */
-export class Airtable<T> {
+export class Airtable<T> implements AirtableClient<T> {
     private readonly _apiKey: string;
     private readonly _base: string;
     private readonly _table: string;
@@ -28,6 +28,10 @@ export class Airtable<T> {
         this._table = table;
     }
 
+    /**
+     * Selects records from the table.
+     * @param options Options for changing the selection.
+     */
     async select<K extends keyof T>(
         options?: AirtableSelectOptions<T, K>
     ): Promise<AirtableSelection<AirtableRecord<Pick<T, K>>>> {
@@ -280,6 +284,82 @@ export const createAirtableClient = (apiKey: string) => (base: string) => <T>(
     table: string
 ) => new Airtable<T>(apiKey, base, table);
 /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
+
+/**
+ * Interferface for an Airtable client for a single table within a base.
+ */
+export interface AirtableClient<T> {
+    /**
+     * Selects records from the table.
+     * @param options Options for changing the selection.
+     */
+    select<K extends keyof T>(
+        options?: AirtableSelectOptions<T, K>
+    ): Promise<AirtableSelection<AirtableRecord<Pick<T, K>>>>;
+
+    /**
+     * Finds a record by ID.
+     * @param id The Record ID.
+     */
+    find(id: string): Promise<AirtableRecord<T>>;
+
+    /**
+     * Creates a record.
+     * @param fields The fields of the record to create.
+     * @param typecast Whether to typecast the record.
+     */
+    create(fields: Partial<T>, typecast?: true): Promise<AirtableRecord<T>>;
+
+    /**
+     * Updates a single record.
+     * @param id The record ID to update.
+     * @param fields The fields to update.
+     * @param destructive Whether to clear unspecified fields.
+     * @param typecast Whether to typecast the record.
+     */
+    update(
+        id: string,
+        fields: Partial<T>,
+        destructive?: boolean,
+        typecast?: true
+    ): Promise<AirtableRecord<T>>;
+
+    /**
+     * Deletes a record.
+     * @param id The record ID to delete.
+     */
+    delete(id: string): Promise<AirtableDeletion>;
+
+    /**
+     * Bulk creates a list of record.
+     * @param records The records to create.
+     * @param typecast Whether to typecast the record.
+     */
+    bulkCreate(
+        records: ReadonlyArray<Partial<T>>,
+        typecast?: true
+    ): Promise<ReadonlyArray<AirtableRecord<T>>>;
+
+    /**
+     * Bulk updates records.
+     * @param records The records to update.
+     * @param destructive Whether to clear unspecified fields.
+     * @param typecast Whether to typecast the record.
+     */
+    bulkUpdate(
+        records: ReadonlyArray<
+            Pick<AirtableRecord<Partial<T>>, "id" | "fields">
+        >,
+        destructive?: boolean,
+        typecast?: true
+    ): Promise<ReadonlyArray<AirtableRecord<T>>>;
+
+    /**
+     * Bulk deletes a list of records.
+     * @param ids The record IDs to delete.
+     */
+    bulkDelete(ids: string[]): Promise<ReadonlyArray<AirtableDeletion>>;
+}
 
 /**
  * AirtableID type.
