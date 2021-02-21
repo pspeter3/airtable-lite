@@ -176,6 +176,20 @@ describe("Airtable", () => {
             expect(offset).toBeUndefined();
         });
 
+        it("should handle undefined correctly", async () => {
+            fetchMock.mockResponseOnce(async (req) => {
+                const url = new URL(req.url);
+                expect(Array.from(url.searchParams.keys())).toHaveLength(0);
+                return JSON.stringify({ records: [] });
+            });
+            const client = new Airtable<Example>("", "", "Examples");
+            const { records, offset } = await client.select({
+                maxRecords: undefined,
+            });
+            expect(records).toHaveLength(0);
+            expect(offset).toBeUndefined();
+        });
+
         it("should infer types correctly", async () => {
             const client = new Airtable<Example>("", "", "Examples");
             const records: ReadonlyArray<AirtableRecord<Example>> = [];

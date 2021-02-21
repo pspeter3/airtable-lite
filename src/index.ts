@@ -38,6 +38,9 @@ export class Airtable<T> implements AirtableClient<T> {
         const url = this._createURL();
         if (options !== undefined) {
             for (const [key, value] of Object.entries(options)) {
+                if (value === undefined) {
+                    continue;
+                }
                 switch (key) {
                     case "fields": {
                         for (const field of value as ReadonlyArray<string>) {
